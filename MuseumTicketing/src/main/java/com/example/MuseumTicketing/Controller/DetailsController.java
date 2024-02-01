@@ -1,0 +1,154 @@
+package com.example.MuseumTicketing.Controller;
+
+import com.example.MuseumTicketing.DTO.DetailsRequest;
+import com.example.MuseumTicketing.DTO.PriceRequest;
+import com.example.MuseumTicketing.Model.InstitutionDetails;
+import com.example.MuseumTicketing.Model.PublicDetails;
+import com.example.MuseumTicketing.Service.DetailsService;
+import com.example.MuseumTicketing.Service.InstitutionDetailsService;
+import com.example.MuseumTicketing.Service.PriceRequestService;
+import com.example.MuseumTicketing.Service.PublicDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/details")
+
+public class DetailsController {
+
+    private final DetailsService detailsService;
+
+    private final PriceRequestService priceRequestService;
+
+    private final InstitutionDetailsService institutionDetailsService;
+    private final PublicDetailsService publicDetailsService;
+
+
+    @Autowired
+    public DetailsController(DetailsService detailsService, PriceRequestService priceRequestService, InstitutionDetailsService institutionDetailsService, PublicDetailsService publicDetailsService) {
+        this.detailsService = detailsService;
+        this.priceRequestService = priceRequestService;
+        this.institutionDetailsService = institutionDetailsService;
+        this.publicDetailsService = publicDetailsService;
+    }
+
+    @CrossOrigin(origins = "http://localhost:8081")
+    @GetMapping("/loadPrice")
+    public List<PriceRequest> getAllPrice() {
+        return priceRequestService.getAllPrice();
+    }
+
+
+    @CrossOrigin(origins = "http://localhost:8081")
+    @PostMapping("/submit")
+    public ResponseEntity<Map<String, Object>> submitDetails(@RequestBody DetailsRequest detailsRequest) {
+
+        try {
+            String sessionId = detailsRequest.getSessionId();
+            String type = detailsRequest.getType();
+            String mobileNumber = detailsRequest.getMobileNumber();
+
+            //detailsService.submitAdditionalDetails(sessionId, type, detailsRequest);
+            Object submittedDetails;
+            if ("institution".equalsIgnoreCase(type)) {
+                submittedDetails= institutionDetailsService.submitAdditionalDetails(sessionId, mobileNumber, detailsRequest);
+            } else {
+                submittedDetails = publicDetailsService.submitAdditionalDetails(sessionId, mobileNumber, detailsRequest);
+            }
+
+
+
+            Map<String,Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Details submitted successfully");
+            response.put("amount", getPriceFromDetails(submittedDetails));
+            response.put("name", getNameFromDetails(submittedDetails));
+            response.put("mobileNumber", getMobileNumberFromDetails(submittedDetails));
+            response.put("sessionId", getSessionIdFromDetails(submittedDetails));
+
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", "error");
+            errorResponse.put("message", "Failed to submit details. " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+
+    }
+
+//    @CrossOrigin(origins = "http://localhost:8081")
+//    @PostMapping("/update")
+//    public ResponseEntity<Map<String, String>> updateDetails(@RequestBody DetailsRequest detailsRequest) {
+//        try {
+//            String sessionId = detailsRequest.getSessionId();
+//            String type = detailsRequest.getType();
+//
+//            detailsService.updateDetails(sessionId, type, detailsRequest);
+//
+//            Map<String, String> response = new HashMap<>();
+//            response.put("status", "success");
+//            response.put("message", "Details updated successfully");
+//
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Map<String, String> errorResponse = new HashMap<>();
+//            errorResponse.put("status", "error");
+//            errorResponse.put("message", "Failed to update details. " + e.getMessage());
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+//        }
+//    }
+    private Integer getPriceFromDetails(Object details) {
+        if (details instanceof InstitutionDetails) {
+            return ((InstitutionDetails) details).getTotalPrice();
+        } else if (details instanceof PublicDetails) {
+            return ((PublicDetails) details).getTotalPrice();
+        } else {
+            return null;
+        }
+
+    }
+    private String getNameFromDetails(Object details) {
+        if (details instanceof InstitutionDetails) {
+            return ((InstitutionDetails) details).getInstitutionName();
+        } else if (details instanceof PublicDetails) {
+            return ((PublicDetails) details).getName();
+        } else {
+            return null;
+        }
+
+    }
+    private String getMobileNumberFromDetails(Object details) {
+        if (details instanceof InstitutionDetails) {
+            return ((InstitutionDetails) details).getMobileNumber();
+        } else if (details instanceof PublicDetails) {
+            return ((PublicDetails) details).getMobileNumber();
+        } else {
+            return null;
+        }
+
+    }
+
+    private String getSessionIdFromDetails(Object details) {
+        if (details instanceof InstitutionDetails) {
+            return ((InstitutionDetails) details).getSessionId();
+        } else if (details instanceof PublicDetails) {
+            return ((PublicDetails) details).getSessionId();
+        } else {
+            return null;
+        }
+
+    }
+}
+
