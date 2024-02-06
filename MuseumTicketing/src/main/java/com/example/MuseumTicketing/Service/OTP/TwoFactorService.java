@@ -31,13 +31,13 @@ public class TwoFactorService {
         uriVariables.put("apiKey", apiKey);
         uriVariables.put("mobileNumber", mobileNumber);
 
-        Details existingDetails = detailsRepo.findByMobileNumber(mobileNumber);
-
-        if (existingDetails == null) {
-            Details newdetails = new Details();
-            newdetails.setMobileNumber(mobileNumber);
-            detailsRepo.save(newdetails);
-        }
+//        Details existingDetails = detailsRepo.findByMobileNumber(mobileNumber);
+//
+//        if (existingDetails == null) {
+//            Details newdetails = new Details();
+//            newdetails.setMobileNumber(mobileNumber);
+//            detailsRepo.save(newdetails);
+//        }
         // Make a GET request to generate OTP
         return restTemplate.getForObject(apiUrl, String.class, uriVariables);
     }
@@ -60,13 +60,13 @@ public class TwoFactorService {
         uriVariables.put("enteredOtp", enteredOtp);
 
 
-        Details exsistdetails = detailsRepo.findByMobileNumber(mobileNumber);
-
-        if(exsistdetails != null) {
-
-            exsistdetails.setSessionId(sessionId);
-            detailsRepo.save(exsistdetails);
-        }
+//        Details exsistdetails = detailsRepo.findByMobileNumber(mobileNumber);
+//
+//        if(exsistdetails != null) {
+//
+//            exsistdetails.setSessionId(sessionId);
+//            detailsRepo.save(exsistdetails);
+//        }
 
 
         // Make a GET request to validate OTP

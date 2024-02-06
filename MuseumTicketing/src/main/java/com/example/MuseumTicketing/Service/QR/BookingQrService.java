@@ -6,10 +6,9 @@ import com.example.MuseumTicketing.Model.InstitutionDetails;
 import com.example.MuseumTicketing.Model.PublicDetails;
 import com.example.MuseumTicketing.Repo.InstitutionDetailsRepo;
 import com.example.MuseumTicketing.Repo.PublicDetailsRepo;
-import com.example.MuseumTicketing.Service.InstitutionDetailsService;
+import com.example.MuseumTicketing.Service.Details.InstitutionDetailsService;
 import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

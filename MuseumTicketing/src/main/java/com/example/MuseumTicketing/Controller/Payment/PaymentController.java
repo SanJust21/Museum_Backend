@@ -4,6 +4,8 @@ import com.example.MuseumTicketing.DTO.Payment.OrderResponse;
 import com.example.MuseumTicketing.DTO.Payment.VerifyPaymentRequest;
 import com.example.MuseumTicketing.Model.InstitutionDetails;
 import com.example.MuseumTicketing.Model.PublicDetails;
+import com.example.MuseumTicketing.Model.ForeignerDetails;
+import com.example.MuseumTicketing.Repo.ForeignerDetailsRepo;
 import com.example.MuseumTicketing.Repo.InstitutionDetailsRepo;
 import com.example.MuseumTicketing.Repo.PublicDetailsRepo;
 import com.example.MuseumTicketing.Service.Payment.PaymentService;
@@ -33,14 +35,19 @@ public class PaymentController {
 
     private InstitutionDetailsRepo institutionDetailsRepo;
     private PublicDetailsRepo publicDetailsRepo;
+
+    private ForeignerDetailsRepo foreignerDetailsRepo;
+
+
     @Autowired
     public PaymentController(
             PaymentService paymentService,
             InstitutionDetailsRepo institutionDetailsRepo,
-            PublicDetailsRepo publicDetailsRepo) {
+            PublicDetailsRepo publicDetailsRepo, ForeignerDetailsRepo foreignerDetailsRepo) {
         this.paymentService = paymentService;
         this.institutionDetailsRepo = institutionDetailsRepo;
         this.publicDetailsRepo = publicDetailsRepo;
+        this.foreignerDetailsRepo = foreignerDetailsRepo;
     }
 
     @CrossOrigin(origins = "http://localhost:8081")
@@ -57,9 +64,11 @@ public class PaymentController {
             // Search the Institution and Public tables by sessionId
             Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findBySessionId(sessionId);
             Optional<PublicDetails> publicDetails = publicDetailsRepo.findBySessionId(sessionId);
+            Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findBySessionId(sessionId);
 
             InstitutionDetails institutionDetailsEntity = institutionDetails.orElse(null);
             PublicDetails publicDetailsEntity = publicDetails.orElse(null);
+            ForeignerDetails foreignerDetailsEntity = foreignerDetails.orElse(null);
 
             if (institutionDetailsEntity != null) {
                 institutionDetailsEntity.setOrderId(orderId);
@@ -67,6 +76,9 @@ public class PaymentController {
             } else if (publicDetailsEntity != null) {
                 publicDetailsEntity.setOrderId(orderId);
                 publicDetailsRepo.save(publicDetailsEntity);
+            } else if (foreignerDetailsEntity != null) {
+                foreignerDetailsEntity.setOrderId(orderId);
+                foreignerDetailsRepo.save(foreignerDetailsEntity);
             } else {
                 return ResponseEntity.badRequest().body("No corresponding details found for sessionId: " + sessionId);
             }
@@ -75,7 +87,7 @@ public class PaymentController {
             return ResponseEntity.ok(orderResponse);
         } catch (RazorpayException e) {
             e.printStackTrace();
-            String errorMessage = "Failed to create order. " + e.getMessage();
+            String errorMessage = "Failed to create order. " ;
             return ResponseEntity.badRequest().body(errorMessage);
         }
     }
@@ -96,9 +108,11 @@ public class PaymentController {
                 // Store paymentId in the corresponding table based on orderId
                 Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByOrderId(orderId);
                 Optional<PublicDetails> publicDetails = publicDetailsRepo.findByOrderId(orderId);
+                Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByOrderId(orderId);
 
                 InstitutionDetails institutionDetailsEntity = institutionDetails.orElse(null);
                 PublicDetails publicDetailsEntity = publicDetails.orElse(null);
+                ForeignerDetails foreignerDetailsEntity = foreignerDetails.orElse(null);
 
                 // Update the paymentId based on the type of details
                 if (institutionDetailsEntity != null) {
@@ -107,7 +121,11 @@ public class PaymentController {
                 } else if (publicDetailsEntity != null) {
                     publicDetailsEntity.setPaymentid(paymentId);
                     publicDetailsRepo.save(publicDetailsEntity);
-                } else {
+                } else if (foreignerDetailsEntity != null) {
+                    foreignerDetailsEntity.setPaymentid(paymentId);
+                    foreignerDetailsRepo.save(foreignerDetailsEntity);
+                }
+                else {
                     return ResponseEntity.badRequest().body("No corresponding details found for orderId: " + orderId);
                 }
                 return ResponseEntity.ok("Payment successful. Order ID: " + orderId + ", Payment ID: " + paymentId);
@@ -116,7 +134,7 @@ public class PaymentController {
             }
         } catch (RazorpayException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Payment verification failed. " + e.getMessage());
+            return ResponseEntity.badRequest().body("Payment verification failed. " );
         }
     }
 
