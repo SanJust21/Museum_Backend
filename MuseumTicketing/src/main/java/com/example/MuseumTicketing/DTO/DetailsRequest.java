@@ -18,14 +18,34 @@ public class DetailsRequest {
     private int numberOfStudents;
     private int numberOfTeachers;
     private LocalDate visitDate;
+    private LocalDate bookDate;
 
     // Fields for public details
     private String name;
     private int numberOfAdults;
     private int numberOfChildren;
+    private int numberOfSeniors;
    // private String category; //'public' or 'foreigner'
-    private int totalPrice;
+    private double totalPrice;
     private String paymentid;
+
+    private boolean visitStatus;
+
+    public boolean isVisitStatus() {
+        return visitStatus;
+    }
+
+    public void setVisitStatus(boolean visitStatus) {
+        this.visitStatus = visitStatus;
+    }
+
+    public LocalDate getBookDate() {
+        return bookDate;
+    }
+
+    public void setBookDate(LocalDate bookDate) {
+        this.bookDate = bookDate;
+    }
 
     public String getPaymentid() {
         return paymentid;
@@ -47,7 +67,7 @@ public class DetailsRequest {
 //        return category;
 //    }
 
-    public int getTotalPrice() {
+    public double getTotalPrice() {
         return totalPrice;
     }
 
@@ -63,7 +83,16 @@ public class DetailsRequest {
 //        this.category = category;
 //    }
 
-    public void setTotalPrice(int totalPrice) {
+
+    public int getNumberOfSeniors() {
+        return numberOfSeniors;
+    }
+
+    public void setNumberOfSeniors(int numberOfSeniors) {
+        this.numberOfSeniors = numberOfSeniors;
+    }
+
+    public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

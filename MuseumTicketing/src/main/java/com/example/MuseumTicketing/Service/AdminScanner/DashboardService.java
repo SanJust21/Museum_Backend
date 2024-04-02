@@ -2,6 +2,8 @@ package com.example.MuseumTicketing.Service.AdminScanner;
 
 
 import com.example.MuseumTicketing.DTO.AdminScanner.CategoryVisitorDTO;
+import com.example.MuseumTicketing.DTO.AdminScanner.TotalIncomeDTO;
+import com.example.MuseumTicketing.DTO.AdminScanner.TotalTicketsDTO;
 import com.example.MuseumTicketing.DTO.DetailsRequest;
 import com.example.MuseumTicketing.Model.ForeignerDetails;
 import com.example.MuseumTicketing.Model.InstitutionDetails;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
@@ -153,20 +156,19 @@ public class DashboardService {
         return detailsRequest;
     }
 
-    public List<CategoryVisitorDTO> getTotalVisitorsForCurrentDate() {
-        LocalDate currentDate = LocalDate.now();
+    public List<CategoryVisitorDTO> getTotalVisitorsForDate(LocalDate date) {
         List<CategoryVisitorDTO> visitorDTOs = new ArrayList<>();
 
         // Get total visitors for public category
-        int totalPublicVisitors = getTotalVisitorsForCategory(publicDetailsRepo.findByVisitDate(currentDate), "Public");
+        int totalPublicVisitors = getTotalVisitorsForCategory(publicDetailsRepo.findByVisitDate(date), "Public");
         visitorDTOs.add(new CategoryVisitorDTO("Public", totalPublicVisitors));
 
         // Get total visitors for institution category
-        int totalInstitutionVisitors = getTotalVisitorsForCategory(institutionDetailsRepo.findByVisitDate(currentDate), "Institution");
+        int totalInstitutionVisitors = getTotalVisitorsForCategory(institutionDetailsRepo.findByVisitDate(date), "Institution");
         visitorDTOs.add(new CategoryVisitorDTO("Institution", totalInstitutionVisitors));
 
         // Get total visitors for foreigner category
-        int totalForeignerVisitors = getTotalVisitorsForCategory(foreignerDetailsRepo.findByVisitDate(currentDate), "Foreigner");
+        int totalForeignerVisitors = getTotalVisitorsForCategory(foreignerDetailsRepo.findByVisitDate(date), "Foreigner");
         visitorDTOs.add(new CategoryVisitorDTO("Foreigner", totalForeignerVisitors));
 
         return visitorDTOs;
@@ -178,15 +180,56 @@ public class DashboardService {
         // Get the end date (following Sunday)
         LocalDate endDate = startDate.plusDays(6); // 6 days ahead to include the whole week
 
-        return getTotalVisitorsForWeek(startDate, endDate);
+        return getTotalVisitorsForDateRange(startDate, endDate);
+    }
+    public List<CategoryVisitorDTO> getTotalVisitorsForMonth(String monthName, int year) {
+        // Parse the month name to get the corresponding Month enum value
+        Month month = Month.valueOf(monthName.toUpperCase());
+
+        // Construct the start date for the specified month and year
+        LocalDate startDate = LocalDate.of(year, month, 1);
+
+        // Construct the end date for the specified month and year
+        LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
+
+        return getTotalVisitorsForDateRange(startDate, endDate);
     }
 
-    public List<CategoryVisitorDTO> getTotalVisitorsForWeek(LocalDate startDate, LocalDate endDate) {
+    public List<CategoryVisitorDTO> getTotalVisitorsForYear(int year) {
+        // Construct the start date for the specified year (first day of the year)
+        LocalDate startDate = LocalDate.of(year, Month.JANUARY, 1);
+
+        // Construct the end date for the specified year (last day of the year)
+        LocalDate endDate = LocalDate.of(year, Month.DECEMBER, 31);
+
+        return getTotalVisitorsForDateRange(startDate, endDate);
+    }
+
+    public List<CategoryVisitorDTO> getTotalVisitorsForDateRange(LocalDate startDate, LocalDate endDate) {
         // Get total visitors for each category within the specified week
         List<CategoryVisitorDTO> visitorDTOs = new ArrayList<>();
         visitorDTOs.add(new CategoryVisitorDTO("Public", getTotalVisitorsForCategory(publicDetailsRepo.findByVisitDateBetween(startDate, endDate), "Public")));
         visitorDTOs.add(new CategoryVisitorDTO("Institution", getTotalVisitorsForCategory(institutionDetailsRepo.findByVisitDateBetween(startDate, endDate), "Institution")));
         visitorDTOs.add(new CategoryVisitorDTO("Foreigner", getTotalVisitorsForCategory(foreignerDetailsRepo.findByVisitDateBetween(startDate, endDate), "Foreigner")));
+        return visitorDTOs;
+    }
+
+    public List<CategoryVisitorDTO> getTotalVisitorsUpToNow() {
+        LocalDate currentDate = LocalDate.now();
+        List<CategoryVisitorDTO> visitorDTOs = new ArrayList<>();
+
+        int totalPublicVisitors = publicDetailsRepo.countVisitorsToDate(currentDate);
+        visitorDTOs.add(new CategoryVisitorDTO("Public", totalPublicVisitors));
+
+        int totalInstitutionVisitors = institutionDetailsRepo.countVisitorsToDate(currentDate);
+        visitorDTOs.add(new CategoryVisitorDTO("Institution", totalInstitutionVisitors));
+
+        int totalForeignerVisitors = foreignerDetailsRepo.countVisitorsToDate(currentDate);
+        visitorDTOs.add(new CategoryVisitorDTO("Foreigner", totalForeignerVisitors));
+
+//        int totalVisitors = totalPublicVisitors + totalInstitutionVisitors + totalForeignerVisitors;
+//        visitorDTOs.add(new CategoryVisitorDTO("Total", totalVisitors));
+
         return visitorDTOs;
     }
 
@@ -196,7 +239,7 @@ public class DashboardService {
         for (Object details : detailsList) {
             if (details instanceof PublicDetails && category.equals("Public")) {
                 if (((PublicDetails) details).isVisitStatus()) {
-                    totalVisitors += ((PublicDetails) details).getNumberOfAdults() + ((PublicDetails) details).getNumberOfChildren();
+                    totalVisitors += ((PublicDetails) details).getNumberOfAdults() + ((PublicDetails) details).getNumberOfChildren() + ((PublicDetails) details).getNumberOfSeniors();
                 }
             } else if (details instanceof InstitutionDetails && category.equals("Institution")) {
                 if (((InstitutionDetails) details).isVisitStatus()) {
@@ -209,6 +252,40 @@ public class DashboardService {
             }
         }
         return totalVisitors;
+    }
+    public TotalTicketsDTO getTotalTickets() {
+        int totalPublicTickets = publicDetailsRepo.countTotalPublicTicketsWithticketId();
+        int totalInstitutionTickets = institutionDetailsRepo.countTotalInstitutionTicketsWithticketId();
+        int totalForeignerTickets = foreignerDetailsRepo.countTotalForeignerTicketsWithticketId();
+
+        return new TotalTicketsDTO(totalPublicTickets, totalInstitutionTickets, totalForeignerTickets);
+    }
+
+    public TotalIncomeDTO getTotalIncome() {
+        double totalPublicIncome = publicDetailsRepo.calculateTotalPublicIncome();
+        double totalInstitutionIncome = institutionDetailsRepo.calculateTotalInstitutionIncome();
+        double totalForeignerIncome = foreignerDetailsRepo.calculateTotalForeignerIncome();
+        double totalIncome = totalPublicIncome + totalInstitutionIncome + totalForeignerIncome;
+
+
+        return new TotalIncomeDTO(totalPublicIncome, totalInstitutionIncome, totalForeignerIncome, totalIncome);
+    }
+    public List<TotalIncomeDTO> getTotalIncomeForYear(int year) {
+        List<TotalIncomeDTO> totalIncomeList = new ArrayList<>();
+
+        // Iterate over each month of the year
+        for (Month month : Month.values()) {
+            int monthValue = month.getValue();
+            double totalPublicIncome = publicDetailsRepo.safeCalculateTotalPublicIncomeForMonth(monthValue, year);
+            double totalInstitutionIncome = institutionDetailsRepo.safeCalculateTotalInstitutionIncomeForMonth(monthValue, year);
+            double totalForeignerIncome = foreignerDetailsRepo.safeCalculateTotalForeignerIncomeForMonth(monthValue, year);
+            double totalIncome = totalPublicIncome + totalInstitutionIncome + totalForeignerIncome;
+            // Create TotalIncomeDTO object for the month
+            TotalIncomeDTO totalIncomeDTO = new TotalIncomeDTO(month.toString(), totalPublicIncome, totalInstitutionIncome, totalForeignerIncome, totalIncome);
+            totalIncomeList.add(totalIncomeDTO);
+        }
+
+        return totalIncomeList;
     }
 
 }

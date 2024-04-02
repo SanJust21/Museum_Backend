@@ -5,13 +5,13 @@ import lombok.Data;
 @Data
 public class OrderResponse {
     private String razorpayKeyId;
-    private int amount;
+    private double amount;
     private String currency;
     private String orderId;
     private String sessionId;
 
 
-    public OrderResponse(String razorpayKeyId, int amount, String currency, String orderId, String sessionId) {
+    public OrderResponse(String razorpayKeyId, double amount, String currency, String orderId, String sessionId) {
         this.razorpayKeyId = razorpayKeyId;
         this.amount = amount;
         this.currency = currency;

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class OrderRequest {
 
-    private int amount;
+    private double amount;
     private String sessionId;
 }

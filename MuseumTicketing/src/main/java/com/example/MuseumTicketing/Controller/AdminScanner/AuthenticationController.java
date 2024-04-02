@@ -1,8 +1,9 @@
 package com.example.MuseumTicketing.Controller.AdminScanner;
 
 
+import com.example.MuseumTicketing.Config.AppConfig;
 import com.example.MuseumTicketing.DTO.AdminScanner.JwtAuthenticationResponse;
-import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
+//import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignInRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignUpRequest;
 import com.example.MuseumTicketing.Model.Users;
@@ -18,21 +19,21 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/signup")
     public ResponseEntity<Users> signup(@RequestBody SignUpRequest signUpRequest){
         return ResponseEntity.ok(authenticationService.signup(signUpRequest));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/signin")
     public ResponseEntity<JwtAuthenticationResponse> signin(@RequestBody SignInRequest signInRequest){
         return ResponseEntity.ok(authenticationService.signin(signInRequest));
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
-    @PostMapping("/refresh")
-    public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest){
-        return ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
-    }
+//    @CrossOrigin(origins = AppConfig.BASE_URL)
+//    @PostMapping("/refresh")
+//    public ResponseEntity<JwtAuthenticationResponse> refresh(@RequestBody RefreshTokenRequest refreshTokenRequest){
+//        return ResponseEntity.ok(authenticationService.refreshToken(refreshTokenRequest));
+//    }
 }

@@ -2,6 +2,7 @@ package com.example.MuseumTicketing.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 @Entity
@@ -30,15 +31,26 @@ public class ForeignerDetails {
 
         //private String category; // "public" or "foreigner"
 
-        private int totalPrice;
+        private double totalPrice;
 
         private LocalDate visitDate;
+
+       // @NotNull
+        private LocalDate bookDate;
 
         private String paymentid;
 
         private String orderId;
 
-        public ForeignerDetails(String mobileNumber, String type, String email, String sessionId, String name, int numberOfAdults, int numberOfChildren, int totalPrice, LocalDate visitDate, String paymentid, String orderId) {
+        private String ticketId;
+
+        @Column(name = "visit_status", nullable = false, columnDefinition = "boolean default false")
+        private boolean visitStatus;
+
+        @Column(name = "payment_status", nullable = false, columnDefinition = "boolean default false")
+        private boolean paymentStatus;
+
+        public ForeignerDetails(String mobileNumber, String type, String email, String sessionId, String name, int numberOfAdults, int numberOfChildren, double totalPrice, LocalDate visitDate, String paymentid, String orderId, String ticketId, LocalDate bookDate, boolean visitStatus, boolean paymentStatus) {
             this.mobileNumber = mobileNumber;
             this.type = type;
             this.email = email;
@@ -50,6 +62,10 @@ public class ForeignerDetails {
             this.visitDate = visitDate;
             this.paymentid = paymentid;
             this.orderId = orderId;
+            this.ticketId = ticketId;
+            this.bookDate = bookDate;
+            this.visitStatus = visitStatus;
+            this.paymentStatus = paymentStatus;
         }
 
         public ForeignerDetails(Long id) {

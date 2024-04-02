@@ -1,4 +1,5 @@
 package com.example.MuseumTicketing.Controller.OTP;
+import com.example.MuseumTicketing.Config.AppConfig;
 import com.example.MuseumTicketing.Service.OTP.TwoFactorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +21,7 @@ public class TwoFactorController {
     }
 
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/generate-otp")
     public ResponseEntity<Map<String, String>> generateOtp(@RequestBody Map<String, String> requestBody) {
         try{
@@ -41,13 +42,13 @@ public class TwoFactorController {
 
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to generate OTP. ");
+            errorResponse.put("message", "Failed to generate OTP. " + e.getMessage());
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @GetMapping("/resend-otp/{mobileNumber}")
     public ResponseEntity<Map<String, String>> resendOtp(@PathVariable String mobileNumber) {
         try {
@@ -63,14 +64,14 @@ public class TwoFactorController {
 
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to resend OTP. ");
+            errorResponse.put("message", "Failed to resend OTP. " + e.getMessage());
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/validate-otp")
     public ResponseEntity<Map<String, String>> validateOtp(@RequestBody Map<String, String> requestBody) {
         try
@@ -95,7 +96,7 @@ public class TwoFactorController {
 
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to validate OTP. ");
+            errorResponse.put("message", "Failed to validate OTP. " + e.getMessage());
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }

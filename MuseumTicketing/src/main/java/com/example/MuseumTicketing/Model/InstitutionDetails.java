@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 
@@ -34,13 +35,24 @@ public class InstitutionDetails {
 
     private LocalDate visitDate;
 
-    private int totalPrice;
+    //@NotNull
+    private LocalDate bookDate;
+
+    private double totalPrice;
 
     private String orderId;
 
     private String paymentid;
 
-    public InstitutionDetails(String mobileNumber, String type, String email, String sessionId, String institutionName, String district, int numberOfStudents, int numberOfTeachers, LocalDate visitDate, int totalPrice, String orderId, String paymentid) {
+    private String ticketId;
+
+    @Column(name = "visit_status", nullable = false, columnDefinition = "boolean default false")
+    private boolean visitStatus;
+
+    @Column(name = "payment_status", nullable = false, columnDefinition = "boolean default false")
+    private boolean paymentStatus;
+
+    public InstitutionDetails(String mobileNumber, String type, String email, String sessionId, String institutionName, String district, int numberOfStudents, int numberOfTeachers, LocalDate visitDate, double totalPrice, String orderId, String paymentid, String ticketId, LocalDate bookDate, boolean visitStatus, boolean paymentStatus) {
         this.mobileNumber = mobileNumber;
         this.type = type;
         this.email = email;
@@ -53,6 +65,10 @@ public class InstitutionDetails {
         this.totalPrice = totalPrice;
         this.orderId = orderId;
         this.paymentid = paymentid;
+        this.ticketId = ticketId;
+        this.bookDate = bookDate;
+        this.visitStatus = visitStatus;
+        this.paymentStatus = paymentStatus;
     }
 
     public InstitutionDetails(Long id) {

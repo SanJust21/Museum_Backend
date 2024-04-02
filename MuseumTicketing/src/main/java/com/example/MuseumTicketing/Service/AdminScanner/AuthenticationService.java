@@ -1,7 +1,7 @@
 package com.example.MuseumTicketing.Service.AdminScanner;
 
 import com.example.MuseumTicketing.DTO.AdminScanner.JwtAuthenticationResponse;
-import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
+//import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignInRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignUpRequest;
 import com.example.MuseumTicketing.Model.Role;
@@ -18,7 +18,7 @@ public interface AuthenticationService {
 
     JwtAuthenticationResponse signin(SignInRequest signInRequest);
 
-    JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
+    //JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 
     ResponseEntity<?> updateEmployee(String employeeId, SignUpRequest signUpRequest);
 

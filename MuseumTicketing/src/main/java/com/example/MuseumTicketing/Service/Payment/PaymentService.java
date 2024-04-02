@@ -16,7 +16,7 @@ public class PaymentService {
     private static final String currency = "INR";
 
 
-    public String createOrder(int amount) throws RazorpayException {
+    public String createOrder(double amount) throws RazorpayException {
         try {
             RazorpayClient razorpayClient = new RazorpayClient(razorpayKeyId, razorpayKeySecret);
 

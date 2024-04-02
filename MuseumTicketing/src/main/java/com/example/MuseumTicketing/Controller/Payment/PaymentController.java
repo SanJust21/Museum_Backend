@@ -1,4 +1,5 @@
 package com.example.MuseumTicketing.Controller.Payment;
+import com.example.MuseumTicketing.Config.AppConfig;
 import com.example.MuseumTicketing.DTO.Payment.OrderRequest;
 import com.example.MuseumTicketing.DTO.Payment.OrderResponse;
 import com.example.MuseumTicketing.DTO.Payment.VerifyPaymentRequest;
@@ -50,11 +51,11 @@ public class PaymentController {
         this.foreignerDetailsRepo = foreignerDetailsRepo;
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/create-order")
     public ResponseEntity<Object> createOrder(@RequestBody OrderRequest orderRequest) {
         try {
-            int amount = orderRequest.getAmount();
+            double amount = orderRequest.getAmount();
             String sessionId = orderRequest.getSessionId();
 
             String orderId = paymentService.createOrder(amount);
@@ -87,12 +88,12 @@ public class PaymentController {
             return ResponseEntity.ok(orderResponse);
         } catch (RazorpayException e) {
             e.printStackTrace();
-            String errorMessage = "Failed to create order. " ;
+            String errorMessage = "Failed to create order. " + e.getMessage();
             return ResponseEntity.badRequest().body(errorMessage);
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/verify-payment")
     public ResponseEntity<Object> verifyPayment(
             @RequestBody VerifyPaymentRequest verifyPaymentRequest) {
@@ -117,12 +118,15 @@ public class PaymentController {
                 // Update the paymentId based on the type of details
                 if (institutionDetailsEntity != null) {
                     institutionDetailsEntity.setPaymentid(paymentId);
+                    institutionDetailsEntity.setPaymentStatus(true);
                     institutionDetailsRepo.save(institutionDetailsEntity);
                 } else if (publicDetailsEntity != null) {
                     publicDetailsEntity.setPaymentid(paymentId);
+                    publicDetailsEntity.setPaymentStatus(true);
                     publicDetailsRepo.save(publicDetailsEntity);
                 } else if (foreignerDetailsEntity != null) {
                     foreignerDetailsEntity.setPaymentid(paymentId);
+                    foreignerDetailsEntity.setPaymentStatus(true);
                     foreignerDetailsRepo.save(foreignerDetailsEntity);
                 }
                 else {
@@ -134,7 +138,7 @@ public class PaymentController {
             }
         } catch (RazorpayException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Payment verification failed. " );
+            return ResponseEntity.badRequest().body("Payment verification failed. ");
         }
     }
 

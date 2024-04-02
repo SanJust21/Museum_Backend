@@ -1,7 +1,7 @@
 package com.example.MuseumTicketing.Service.AdminScanner;
 
 import com.example.MuseumTicketing.DTO.AdminScanner.JwtAuthenticationResponse;
-import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
+//import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignInRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignUpRequest;
 import com.example.MuseumTicketing.Model.*;
@@ -206,27 +206,27 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
             var user = usersRepo.findByEmployeeId(signInRequest.getEmployeeId()).orElseThrow(() ->new IllegalArgumentException("Invalid Name or password"));
             var jwt = jwtService.generateToken(user);
-            var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
+            //var refreshToken = jwtService.generateRefreshToken(new HashMap<>(), user);
 
             JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
 
             jwtAuthenticationResponse.setToken(jwt);
-            jwtAuthenticationResponse.setRefreshToken(refreshToken);
+            //jwtAuthenticationResponse.setRefreshToken(refreshToken);
             return jwtAuthenticationResponse;
     }
 
-    public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
-        String userName = jwtService.extractUserName(refreshTokenRequest.getToken());
-        Users user = usersRepo.findByEmployeeId(userName).orElseThrow();
-        if (jwtService.isTokenValid(refreshTokenRequest.getToken(), user)) {
-            var jwt = jwtService.generateToken(user);
-
-            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
-
-            jwtAuthenticationResponse.setToken(jwt);
-            jwtAuthenticationResponse.setRefreshToken(refreshTokenRequest.getToken());
-            return jwtAuthenticationResponse;
-        }
-        return null;
-    }
+//    public JwtAuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
+//        String userName = jwtService.extractUserName(refreshTokenRequest.getToken());
+//        Users user = usersRepo.findByEmployeeId(userName).orElseThrow();
+//        if (jwtService.isTokenValid(refreshTokenRequest.getToken(), user)) {
+//            var jwt = jwtService.generateToken(user);
+//
+//            JwtAuthenticationResponse jwtAuthenticationResponse = new JwtAuthenticationResponse();
+//
+//            jwtAuthenticationResponse.setToken(jwt);
+//            jwtAuthenticationResponse.setRefreshToken(refreshTokenRequest.getToken());
+//            return jwtAuthenticationResponse;
+//        }
+//        return null;
+//    }
 }

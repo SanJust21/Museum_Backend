@@ -1,12 +1,12 @@
 package com.example.MuseumTicketing.Controller;
 
+import com.example.MuseumTicketing.Config.AppConfig;
 import com.example.MuseumTicketing.DTO.DetailsRequest;
 import com.example.MuseumTicketing.DTO.PriceRequest;
 import com.example.MuseumTicketing.Model.ForeignerDetails;
 import com.example.MuseumTicketing.Model.InstitutionDetails;
 import com.example.MuseumTicketing.Model.PublicDetails;
 import com.example.MuseumTicketing.Service.Details.ForeignerDetailsService;
-import com.example.MuseumTicketing.Service.DetailsService;
 import com.example.MuseumTicketing.Service.Details.InstitutionDetailsService;
 import com.example.MuseumTicketing.Service.BasePrice.PriceRequestService;
 import com.example.MuseumTicketing.Service.Details.PublicDetailsService;
@@ -24,7 +24,6 @@ import java.util.Map;
 
 public class DetailsController {
 
-    private final DetailsService detailsService;
 
     private final PriceRequestService priceRequestService;
 
@@ -35,22 +34,21 @@ public class DetailsController {
 
 
     @Autowired
-    public DetailsController(DetailsService detailsService, PriceRequestService priceRequestService, InstitutionDetailsService institutionDetailsService, PublicDetailsService publicDetailsService, ForeignerDetailsService foreignerDetailsService) {
-        this.detailsService = detailsService;
+    public DetailsController( PriceRequestService priceRequestService, InstitutionDetailsService institutionDetailsService, PublicDetailsService publicDetailsService, ForeignerDetailsService foreignerDetailsService) {
         this.priceRequestService = priceRequestService;
         this.institutionDetailsService = institutionDetailsService;
         this.publicDetailsService = publicDetailsService;
         this.foreignerDetailsService = foreignerDetailsService;
     }
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @GetMapping("/loadPrice")
     public List<PriceRequest> getAllPrice() {
         return priceRequestService.getAllPrice();
     }
 
 
-    @CrossOrigin(origins = "http://localhost:8081")
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/submit")
     public ResponseEntity<Map<String, Object>> submitDetails(@RequestBody DetailsRequest detailsRequest) {
 
@@ -86,14 +84,14 @@ public class DetailsController {
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to submit details. " );
+            errorResponse.put("message", "Failed to submit details." );
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
 
     }
 
-//    @CrossOrigin(origins = "http://localhost:8081")
+//    @CrossOrigin(origins = AppConfig.BASE_URL)
 //    @PostMapping("/update")
 //    public ResponseEntity<Map<String, String>> updateDetails(@RequestBody DetailsRequest detailsRequest) {
 //        try {
@@ -115,7 +113,7 @@ public class DetailsController {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
 //        }
 //    }
-    private Integer getPriceFromDetails(Object details) {
+    private Double getPriceFromDetails(Object details) {
         if (details instanceof InstitutionDetails) {
             return ((InstitutionDetails) details).getTotalPrice();
         } else if (details instanceof PublicDetails) {

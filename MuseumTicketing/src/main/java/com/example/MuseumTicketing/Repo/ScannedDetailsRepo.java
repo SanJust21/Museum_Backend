@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface ScannedDetailsRepo extends JpaRepository<ScannedDetails, Long> {
-    Optional<ScannedDetails> findByTicketId(String bookingId);
+    Optional<ScannedDetails> findByTicketId(String ticketId);
 
     List<ScannedDetails> findByScannedTimeBetween(LocalDateTime localDateTime, LocalDateTime localDateTime1);
 }

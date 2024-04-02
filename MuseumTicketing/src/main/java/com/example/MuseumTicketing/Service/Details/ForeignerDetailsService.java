@@ -6,6 +6,7 @@ import com.example.MuseumTicketing.Repo.ForeignerDetailsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 @Service
 public class ForeignerDetailsService {
@@ -18,15 +19,15 @@ public class ForeignerDetailsService {
         }
 
         public Object submitAdditionalDetails(String sessionId, String mobileNumber, DetailsRequest detailsRequest) {
-            Optional<ForeignerDetails> optionalDetails = foreignerDetailsRepo.findByMobileNumber(mobileNumber);
+           // Optional<ForeignerDetails> optionalDetails = foreignerDetailsRepo.findByMobileNumber(mobileNumber);
             ForeignerDetails foreignerDetails;
 
-            if (optionalDetails.isPresent()) {
-                foreignerDetails = optionalDetails.get();
-            } else {
+           // if (optionalDetails.isPresent()) {
+                //foreignerDetails = optionalDetails.get();
+            //} else {
                 foreignerDetails = new ForeignerDetails();
-                foreignerDetails.setMobileNumber(mobileNumber);
-            }
+            //    foreignerDetails.setMobileNumber(mobileNumber);
+            //}
 
             foreignerDetails.setSessionId(sessionId);
             foreignerDetails.setName(detailsRequest.getName());
@@ -36,11 +37,16 @@ public class ForeignerDetailsService {
             foreignerDetails.setType(detailsRequest.getType());
             foreignerDetails.setTotalPrice(detailsRequest.getTotalPrice());
             foreignerDetails.setVisitDate(detailsRequest.getVisitDate());
-            // publicDetails.setMobileNumber(detailsRequest.getMobileNumber());
+            foreignerDetails.setMobileNumber(detailsRequest.getMobileNumber());
+            foreignerDetails.setBookDate(detailsRequest.getBookDate());
 
 
             foreignerDetailsRepo.save(foreignerDetails);
             return foreignerDetails;
         }
 
+    public List<ForeignerDetails> getAllForeignerDetails() {
+        return foreignerDetailsRepo.findAll();
+
+    }
 }

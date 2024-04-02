@@ -17,4 +17,7 @@ public class BookingQrRequest {
     private String email;
     private int numberOfStudents;
     private int numberOfTeachers;
+    private int numberOfSeniors;
+    private String ticketId;
+    private byte[] pdfData;
 }

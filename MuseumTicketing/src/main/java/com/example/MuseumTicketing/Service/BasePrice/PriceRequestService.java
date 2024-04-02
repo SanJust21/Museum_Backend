@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class PriceRequestService {
 
@@ -23,17 +25,47 @@ public class PriceRequestService {
 
         // Looping through each UserType and creating a UserTypeDTO
         for (Price userType : priceList) {
-            PriceRequest transfer = new PriceRequest();
-            transfer.setId(userType.getId());
-            transfer.setPrice(userType.getPrice());
-            transfer.setType(userType.getType());
-            transfer.setCategory(userType.getCategory());
 
+            priceReq.add(mapToPriceRequest(userType));
 
-            priceReq.add(transfer);
-        }
+           }
 
         return priceReq ;
+    }
+    public PriceRequest addPrice(PriceRequest priceRequest) {
+        Price price = new Price();
+        price.setType(priceRequest.getType());
+        price.setPrice(priceRequest.getPrice());
+        price.setCategory(priceRequest.getCategory());
+        Price savedPrice = priceRepo.save(price);
+        return mapToPriceRequest(savedPrice);
+    }
+
+    public void deletePriceById(int id) {
+        priceRepo.deleteById(id);
+    }
+
+    public PriceRequest updatePrice(int id, PriceRequest updatedPriceRequest) {
+        Optional<Price> optionalPrice = priceRepo.findById(id);
+        if (optionalPrice.isPresent()) {
+            Price existingPrice = optionalPrice.get();
+            existingPrice.setType(updatedPriceRequest.getType());
+            existingPrice.setPrice(updatedPriceRequest.getPrice());
+            existingPrice.setCategory(updatedPriceRequest.getCategory());
+            Price updatedPrice = priceRepo.save(existingPrice);
+            return mapToPriceRequest(updatedPrice);
+        } else {
+
+            throw new IllegalArgumentException("Price with ID " + id + " not found");
+        }
+    }
+    private PriceRequest mapToPriceRequest(Price price) {
+        PriceRequest transfer = new PriceRequest();
+        transfer.setId(price.getId());
+        transfer.setPrice(price.getPrice());
+        transfer.setType(price.getType());
+        transfer.setCategory(price.getCategory());
+        return transfer;
     }
 
 

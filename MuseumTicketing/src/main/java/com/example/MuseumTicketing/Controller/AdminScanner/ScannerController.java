@@ -1,5 +1,6 @@
 package com.example.MuseumTicketing.Controller.AdminScanner;
 
+import com.example.MuseumTicketing.Config.AppConfig;
 import com.example.MuseumTicketing.DTO.AdminScanner.ScanRequest;
 import com.example.MuseumTicketing.Model.ScannedDetails;
 import com.example.MuseumTicketing.Model.Users;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8081")
 @RequestMapping("/api/scanner")
 @RequiredArgsConstructor
 public class ScannerController {
@@ -24,7 +24,7 @@ public class ScannerController {
 
     private final UsersRepo usersRepo;
 
-
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @GetMapping("/hello/{employeeId}")
     public ResponseEntity<String> sayHello(@PathVariable String employeeId) {
 
@@ -38,7 +38,7 @@ public class ScannerController {
         }
     }
 
-
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @PostMapping("/scan")
     public ResponseEntity<?> scanTicket(@RequestBody ScanRequest scanRequest) {
         return scannerService.identifyUserAndGetDetails(scanRequest.getTicketId(), scanRequest.getScannedTime());
@@ -49,7 +49,7 @@ public class ScannerController {
 //        return response;
     }
 
-
+    @CrossOrigin(origins = AppConfig.BASE_URL)
     @GetMapping("/scannedList")
     public ResponseEntity<List<ScannedDetails>> getScannedDetailsForToday() {
         // Retrieve scanned details for today from the service

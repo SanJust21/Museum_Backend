@@ -1,7 +1,5 @@
 package com.example.MuseumTicketing.Service.OTP;
 
-import com.example.MuseumTicketing.Model.Details;
-import com.example.MuseumTicketing.Repo.DetailsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,9 +12,6 @@ import java.util.Map;
 public class TwoFactorService {
 
     private final RestTemplate restTemplate;
-
-    @Autowired
-    private DetailsRepo detailsRepo;
 
     @Value("${2factor.api.key}")
     private String apiKey; // Add your 2Factor API key in application.properties or application.yml

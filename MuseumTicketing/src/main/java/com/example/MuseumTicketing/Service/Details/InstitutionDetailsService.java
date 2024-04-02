@@ -6,6 +6,7 @@ import com.example.MuseumTicketing.Repo.InstitutionDetailsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,15 +20,15 @@ public class InstitutionDetailsService {
     }
 
     public Object submitAdditionalDetails(String sessionId, String mobileNumber, DetailsRequest detailsRequest) {
-        Optional<InstitutionDetails> optionalDetails = institutionDetailsRepo.findByMobileNumber(mobileNumber);
+        //Optional<InstitutionDetails> optionalDetails = institutionDetailsRepo.findByMobileNumber(mobileNumber);
         InstitutionDetails institutionDetails;
 
-        if (optionalDetails.isPresent()) {
-            institutionDetails = optionalDetails.get();
-        } else {
+        //if (optionalDetails.isPresent()) {
+            //institutionDetails = optionalDetails.get();
+        //} else {
             institutionDetails = new InstitutionDetails();
-            institutionDetails.setMobileNumber(mobileNumber);
-        }
+        //    institutionDetails.setMobileNumber(mobileNumber);
+       // }
 
         institutionDetails.setSessionId(sessionId);
         institutionDetails.setType(detailsRequest.getType());
@@ -38,10 +39,17 @@ public class InstitutionDetailsService {
         institutionDetails.setNumberOfTeachers(detailsRequest.getNumberOfTeachers());
         institutionDetails.setTotalPrice(detailsRequest.getTotalPrice());
         institutionDetails.setVisitDate(detailsRequest.getVisitDate());
-       // institutionDetails.setMobileNumber(detailsRequest.getMobileNumber());
+        institutionDetails.setMobileNumber(detailsRequest.getMobileNumber());
+        institutionDetails.setBookDate(detailsRequest.getBookDate());
+
 
         institutionDetailsRepo.save(institutionDetails);
         return institutionDetails;
+    }
+
+    public List<InstitutionDetails> getAllInstitutionDetails() {
+        return institutionDetailsRepo.findAll();
+
     }
 }
 

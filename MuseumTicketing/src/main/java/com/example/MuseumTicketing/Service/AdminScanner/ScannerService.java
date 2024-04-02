@@ -37,17 +37,17 @@ public class ScannerService {
         this.scannedDetailsRepo = scannedDetailsRepo;
     }
 
-    public ResponseEntity<?> identifyUserAndGetDetails(String bookingId, LocalDateTime scannedTime) {
+    public ResponseEntity<?> identifyUserAndGetDetails(String ticketId, LocalDateTime scannedTime) {
         // Check if ticket is already scanned
-        Optional<ScannedDetails> existingScan = scannedDetailsRepo.findByTicketId(bookingId);
+        Optional<ScannedDetails> existingScan = scannedDetailsRepo.findByTicketId(ticketId);
         if (existingScan.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ticket already scanned.");
         }
 
-        // Retrieve details based on bookingId
-        Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByBookingId(bookingId);
-        Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByBookingId(bookingId);
-        Optional<PublicDetails> publicDetails = publicDetailsRepo.findByBookingId(bookingId);
+        // Retrieve details based on ticketId
+        Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByticketId(ticketId);
+        Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByticketId(ticketId);
+        Optional<PublicDetails> publicDetails = publicDetailsRepo.findByticketId(ticketId);
 
 
         if (foreignerDetails.isEmpty() && institutionDetails.isEmpty() && publicDetails.isEmpty()) {
@@ -55,7 +55,7 @@ public class ScannerService {
         }
 
         ScannedDetails scannedDetails = new ScannedDetails();
-        scannedDetails.setTicketId(bookingId);
+        scannedDetails.setTicketId(ticketId);
         scannedDetails.setScannedTime(scannedTime);
 
 //        if (foreignerDetails.isPresent() && !foreignerDetails.get().getVisitDate().isEqual(LocalDate.now())) {
@@ -91,7 +91,7 @@ public class ScannerService {
 
         scannedDetailsRepo.save(scannedDetails);
 
-        // Return appropriate details request based on bookingId
+        // Return appropriate details request based on ticketId
         if (foreignerDetails.isPresent()) {
             return ResponseEntity.ok(convertToDetailsRequest(foreignerDetails.get()));
         } else if (institutionDetails.isPresent()) {
@@ -102,30 +102,30 @@ public class ScannerService {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No details found for the provided ticket ID.");
     }
-//    public ResponseEntity<?> identifyUserAndGetDetails(String bookingId, LocalDateTime scannedTime) {
+//    public ResponseEntity<?> identifyUserAndGetDetails(String ticketId, LocalDateTime scannedTime) {
 //
-//        Optional<ScannedDetails> existingScan = scannedDetailsRepo.findByTicketId(bookingId);
+//        Optional<ScannedDetails> existingScan = scannedDetailsRepo.findByTicketId(ticketId);
 //        if (existingScan.isPresent()) {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ticket already scanned.");
 //        }
 //
 //        ScannedDetails scannedDetails = new ScannedDetails();
-//        scannedDetails.setTicketId(bookingId);
+//        scannedDetails.setTicketId(ticketId);
 //        scannedDetails.setScannedTime(scannedTime);
 //        scannedDetailsRepo.save(scannedDetails);
 //
-//        // Use bookingId to find the corresponding details
-//        Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByBookingId(bookingId);
+//        // Use ticketId to find the corresponding details
+//        Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByticketId(ticketId);
 //        if (foreignerDetails.isPresent()) {
 //            return ResponseEntity.ok(convertToDetailsRequest(foreignerDetails.get()));
 //        }
 //
-//        Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByBookingId(bookingId);
+//        Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByticketId(ticketId);
 //        if (institutionDetails.isPresent()) {
 //            return ResponseEntity.ok(convertToDetailsRequest(institutionDetails.get()));
 //        }
 //
-//        Optional<PublicDetails> publicDetails = publicDetailsRepo.findByBookingId(bookingId);
+//        Optional<PublicDetails> publicDetails = publicDetailsRepo.findByticketId(ticketId);
 //        if (publicDetails.isPresent()) {
 //            return ResponseEntity.ok(convertToDetailsRequest(publicDetails.get()));
 //        }
