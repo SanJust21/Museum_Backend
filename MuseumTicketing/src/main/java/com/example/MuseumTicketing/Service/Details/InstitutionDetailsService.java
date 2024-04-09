@@ -6,6 +6,7 @@ import com.example.MuseumTicketing.Repo.InstitutionDetailsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,7 +49,16 @@ public class InstitutionDetailsService {
     }
 
     public List<InstitutionDetails> getAllInstitutionDetails() {
-        return institutionDetailsRepo.findAll();
+        List<InstitutionDetails> allInstitutionDetails = institutionDetailsRepo.findAll();
+        List<InstitutionDetails> filteredInstitutionDetails = new ArrayList<>();
+
+        for (InstitutionDetails detail : allInstitutionDetails) {
+            if (detail.getTicketId() != null && !detail.getTicketId().isEmpty()) {
+                filteredInstitutionDetails.add(detail);
+            }
+        }
+
+        return filteredInstitutionDetails;
 
     }
 }

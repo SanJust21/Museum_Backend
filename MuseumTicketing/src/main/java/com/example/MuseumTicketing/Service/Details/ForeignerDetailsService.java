@@ -6,6 +6,7 @@ import com.example.MuseumTicketing.Repo.ForeignerDetailsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -46,7 +47,16 @@ public class ForeignerDetailsService {
         }
 
     public List<ForeignerDetails> getAllForeignerDetails() {
-        return foreignerDetailsRepo.findAll();
+        List<ForeignerDetails> allForeignerDetails = foreignerDetailsRepo.findAll();
+        List<ForeignerDetails> filteredForeignerDetails = new ArrayList<>();
+
+        for (ForeignerDetails detail : allForeignerDetails) {
+            if (detail.getTicketId() != null && !detail.getTicketId().isEmpty()) {
+                filteredForeignerDetails.add(detail);
+            }
+        }
+
+        return filteredForeignerDetails;
 
     }
 }

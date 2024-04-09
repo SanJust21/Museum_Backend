@@ -1,5 +1,6 @@
 package com.example.MuseumTicketing.DTO;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 public class DetailsRequest {
 
     private String sessionId;
+
     private String type;
     private String mobileNumber;
     private String email;
@@ -30,6 +32,24 @@ public class DetailsRequest {
     private String paymentid;
 
     private boolean visitStatus;
+    private String ticketId;
+    private boolean paymentStatus;
+
+    public String getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public boolean isPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(boolean paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
 
     public boolean isVisitStatus() {
         return visitStatus;

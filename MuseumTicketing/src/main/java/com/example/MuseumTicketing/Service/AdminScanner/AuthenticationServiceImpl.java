@@ -4,6 +4,7 @@ import com.example.MuseumTicketing.DTO.AdminScanner.JwtAuthenticationResponse;
 //import com.example.MuseumTicketing.DTO.AdminScanner.RefreshTokenRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignInRequest;
 import com.example.MuseumTicketing.DTO.AdminScanner.SignUpRequest;
+import com.example.MuseumTicketing.DTO.DetailsRequest;
 import com.example.MuseumTicketing.Model.*;
 import com.example.MuseumTicketing.Repo.UsersRepo;
 import com.example.MuseumTicketing.Service.Details.ForeignerDetailsService;
@@ -121,6 +122,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
         return allTickets;
     }
 
+
     public List<Users> getAllUsersByRole(Role role) {
         return usersRepo.findAllByRole(role);
     }
@@ -167,6 +169,22 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
         usersRepo.save(user);
         return "Role updated successfully!";
+    }
+
+    public String updateScannerPassword(String employeeId, String newPassword) {
+        Users user = usersRepo.findByEmployeeId(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + employeeId));
+
+        // Check if the user is a scanner
+        if (user.getRole() != Role.SCANNER) {
+            return "User is not a scanner";
+        }
+
+        // Update the password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        usersRepo.save(user);
+
+        return "Scanner password updated successfully!";
     }
 
     public String uploadImageToFileSystem(MultipartFile file, String employeeId) throws IOException {

@@ -1,10 +1,7 @@
 package com.example.MuseumTicketing.Controller.AdminScanner;
 
 import com.example.MuseumTicketing.Config.AppConfig;
-import com.example.MuseumTicketing.DTO.AdminScanner.JwtAuthenticationResponse;
-import com.example.MuseumTicketing.DTO.AdminScanner.SignInRequest;
-import com.example.MuseumTicketing.DTO.AdminScanner.SignUpRequest;
-import com.example.MuseumTicketing.DTO.AdminScanner.UpdateRoleRequest;
+import com.example.MuseumTicketing.DTO.AdminScanner.*;
 import com.example.MuseumTicketing.DTO.PriceRequest;
 import com.example.MuseumTicketing.Model.Role;
 import com.example.MuseumTicketing.Model.Users;
@@ -119,6 +116,21 @@ public class AdminController {
         Role newRole = updateRequest.getNewRole();
         String newPassword = updateRequest.getNewPassword();
         String message = authenticationService.updateEmployeeRole(employeeId, newRole, newPassword);
+        return ResponseEntity.ok(message);
+    }
+
+    @CrossOrigin(origins = AppConfig.BASE_URL)
+    @PutMapping("/updateScannerPassword")
+    public ResponseEntity<String> updateScannerPassword(@RequestBody UpdateScannerPasswordRequest request) {
+        String employeeId = request.getEmployeeId();
+        String newPassword = request.getNewPassword();
+        String confirmPassword = request.getConfirmPassword();
+
+        if (!newPassword.equals(confirmPassword)) {
+            return ResponseEntity.badRequest().body("New password and confirm password do not match");
+        }
+
+        String message = authenticationService.updateScannerPassword(employeeId, newPassword);
         return ResponseEntity.ok(message);
     }
     @CrossOrigin(origins = AppConfig.BASE_URL)

@@ -107,31 +107,31 @@ public class PaymentController {
 
             if (paymentVerified) {
                 // Store paymentId in the corresponding table based on orderId
-                Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByOrderId(orderId);
-                Optional<PublicDetails> publicDetails = publicDetailsRepo.findByOrderId(orderId);
-                Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByOrderId(orderId);
-
-                InstitutionDetails institutionDetailsEntity = institutionDetails.orElse(null);
-                PublicDetails publicDetailsEntity = publicDetails.orElse(null);
-                ForeignerDetails foreignerDetailsEntity = foreignerDetails.orElse(null);
-
-                // Update the paymentId based on the type of details
-                if (institutionDetailsEntity != null) {
-                    institutionDetailsEntity.setPaymentid(paymentId);
-                    institutionDetailsEntity.setPaymentStatus(true);
-                    institutionDetailsRepo.save(institutionDetailsEntity);
-                } else if (publicDetailsEntity != null) {
-                    publicDetailsEntity.setPaymentid(paymentId);
-                    publicDetailsEntity.setPaymentStatus(true);
-                    publicDetailsRepo.save(publicDetailsEntity);
-                } else if (foreignerDetailsEntity != null) {
-                    foreignerDetailsEntity.setPaymentid(paymentId);
-                    foreignerDetailsEntity.setPaymentStatus(true);
-                    foreignerDetailsRepo.save(foreignerDetailsEntity);
-                }
-                else {
-                    return ResponseEntity.badRequest().body("No corresponding details found for orderId: " + orderId);
-                }
+//                Optional<InstitutionDetails> institutionDetails = institutionDetailsRepo.findByOrderId(orderId);
+//                Optional<PublicDetails> publicDetails = publicDetailsRepo.findByOrderId(orderId);
+//                Optional<ForeignerDetails> foreignerDetails = foreignerDetailsRepo.findByOrderId(orderId);
+//
+//                InstitutionDetails institutionDetailsEntity = institutionDetails.orElse(null);
+//                PublicDetails publicDetailsEntity = publicDetails.orElse(null);
+//                ForeignerDetails foreignerDetailsEntity = foreignerDetails.orElse(null);
+//
+//                // Update the paymentId based on the type of details
+//                if (institutionDetailsEntity != null) {
+//                    institutionDetailsEntity.setPaymentid(paymentId);
+//                    institutionDetailsEntity.setPaymentStatus(true);
+//                    institutionDetailsRepo.save(institutionDetailsEntity);
+//                } else if (publicDetailsEntity != null) {
+//                    publicDetailsEntity.setPaymentid(paymentId);
+//                    publicDetailsEntity.setPaymentStatus(true);
+//                    publicDetailsRepo.save(publicDetailsEntity);
+//                } else if (foreignerDetailsEntity != null) {
+//                    foreignerDetailsEntity.setPaymentid(paymentId);
+//                    foreignerDetailsEntity.setPaymentStatus(true);
+//                    foreignerDetailsRepo.save(foreignerDetailsEntity);
+//                }
+//                else {
+//                    return ResponseEntity.badRequest().body("No corresponding details found for orderId: " + orderId);
+//                }
                 return ResponseEntity.ok("Payment successful. Order ID: " + orderId + ", Payment ID: " + paymentId);
             } else {
                 return ResponseEntity.badRequest().body("Payment verification failed.");

@@ -26,6 +26,8 @@ public interface AuthenticationService {
 
     String updateEmployeeRole(String employeeId, Role newRole, String newPassword);
 
+    String updateScannerPassword(String employeeId, String newPassword);
+
     List<Users> getAllUsersByRole(Role role);
 
     String uploadImageToFileSystem(MultipartFile file, String employeeId) throws IOException;

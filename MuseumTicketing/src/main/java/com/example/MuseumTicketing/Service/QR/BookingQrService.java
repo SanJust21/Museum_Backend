@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class BookingQrService {
@@ -59,28 +61,28 @@ public class BookingQrService {
 //       return response;
 //    }
 
-    private static final String BOOKING_ID_PREFIX = "AKM";
-
-    // Method to generate a random 5-digit number
-    private String generateRandomNumber() {
-        Random random = new Random();
-        int randomNumber = random.nextInt(90000) + 10000; // Generates a random number between 10000 and 99999
-        return String.valueOf(randomNumber);
-    }
-
-    // Method to generate the booking ID
-    private String generateticketId() {
-        return BOOKING_ID_PREFIX + generateRandomNumber();
-    }
+//    private static final String BOOKING_ID_PREFIX = "AKM";
+//
+//    // Method to generate a random 5-digit number
+//    private String generateRandomNumber() {
+//        Random random = new Random();
+//        int randomNumber = random.nextInt(90000) + 10000; // Generates a random number between 10000 and 99999
+//        return String.valueOf(randomNumber);
+//    }
+//
+//    // Method to generate the booking ID
+//    private String generateticketId() {
+//        return BOOKING_ID_PREFIX + generateRandomNumber();
+//    }
     public QrCodeResponse generateAndFetchQrCode(BookingQrRequest bookingQrRequest) throws WriterException, IOException {
         String paymentId = bookingQrRequest.getPaymentid();
-        String ticketId = BOOKING_ID_PREFIX + generateRandomNumber();
+        //String ticketId = BOOKING_ID_PREFIX + generateRandomNumber();
 
         // Search in InstitutionDetails
         InstitutionDetails institutionDetails = findInstitutionDetails(paymentId);
         if (institutionDetails != null) {
-            institutionDetails.setTicketId(ticketId);
-            institutionDetailsRepo.save(institutionDetails);
+//            institutionDetails.setTicketId(ticketId);
+//            institutionDetailsRepo.save(institutionDetails);
             String qrCodeDetails = createBookingInfo(institutionDetails);
             return generateQrCodeResponse(qrCodeDetails);
         }
@@ -88,16 +90,16 @@ public class BookingQrService {
         // If not found in InstitutionDetails, search in PublicDetails
         PublicDetails publicDetails = findPublicDetails(paymentId);
         if (publicDetails != null) {
-            publicDetails.setTicketId(ticketId);
-            publicDetailsRepo.save(publicDetails);
+//            publicDetails.setTicketId(ticketId);
+//            publicDetailsRepo.save(publicDetails);
             String qrCodeDetails = createBookingInfo(publicDetails);
             return generateQrCodeResponse(qrCodeDetails);
         }
 
         ForeignerDetails foreignerDetails = findForeignerDetails(paymentId);
         if (foreignerDetails != null) {
-            foreignerDetails.setTicketId(ticketId);
-            foreignerDetailsRepo.save(foreignerDetails);
+//            foreignerDetails.setTicketId(ticketId);
+//            foreignerDetailsRepo.save(foreignerDetails);
             String qrCodeDetails = createBookingInfo(foreignerDetails);
             return generateQrCodeResponse(qrCodeDetails);
         }
@@ -110,11 +112,13 @@ public class BookingQrService {
     private QrCodeResponse generateQrCodeResponse(String qrCodeDetails) throws WriterException, IOException {
         byte[] qrCodeImage = qrCodeService.generateQrCode(qrCodeDetails);
 
+
         QrCodeResponse response = new QrCodeResponse();
         response.setQrCodeImage(qrCodeImage);
         response.setUserDetails(qrCodeDetails);
         return response;
     }
+
 
     private InstitutionDetails findInstitutionDetails(String paymentId) {
         return institutionDetailsRepo.findByPaymentid(paymentId);

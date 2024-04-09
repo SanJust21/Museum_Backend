@@ -1,9 +1,20 @@
 package com.example.MuseumTicketing.Service.Payment;
+import com.example.MuseumTicketing.Model.ForeignerDetails;
+import com.example.MuseumTicketing.Model.InstitutionDetails;
+import com.example.MuseumTicketing.Model.PublicDetails;
+import com.example.MuseumTicketing.Repo.ForeignerDetailsRepo;
+import com.example.MuseumTicketing.Repo.InstitutionDetailsRepo;
+import com.example.MuseumTicketing.Repo.PublicDetailsRepo;
 import com.razorpay.*;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class PaymentService {
@@ -14,6 +25,23 @@ public class PaymentService {
     private static String razorpayKeySecret = "iOSGwx2YAmHsl2dNuzfi1bSa";
 
     private static final String currency = "INR";
+
+    private static final String BOOKING_ID_PREFIX = "AKM";
+
+    private InstitutionDetailsRepo institutionDetailsRepo;
+    private PublicDetailsRepo publicDetailsRepo;
+
+    private ForeignerDetailsRepo foreignerDetailsRepo;
+
+    @Autowired
+    public PaymentService(
+            InstitutionDetailsRepo institutionDetailsRepo,
+            PublicDetailsRepo publicDetailsRepo,
+            ForeignerDetailsRepo foreignerDetailsRepo) {
+        this.institutionDetailsRepo = institutionDetailsRepo;
+        this.publicDetailsRepo = publicDetailsRepo;
+        this.foreignerDetailsRepo = foreignerDetailsRepo;
+    }
 
 
     public String createOrder(double amount) throws RazorpayException {
@@ -48,7 +76,15 @@ public class PaymentService {
             Payment payment = razorpayClient.payments.fetch(paymentId);
 
             // Check the payment status
-            return "captured".equals(payment.get("status"));
+            //return "captured".equals(payment.get("status"));
+            boolean paymentStatus = "captured".equals(payment.get("status"));
+            if (paymentStatus) {
+                // Payment is successful, generate ticketId and set it into the respective repository
+                String ticketId = generateTicketId();
+                setTicketIdAndPaymentStatus(orderId, paymentId, ticketId);
+            }
+
+            return paymentStatus;
         } catch (RazorpayException e) {
             e.printStackTrace();
             throw new RazorpayException("Payment verification failed.", e);
@@ -65,4 +101,43 @@ public class PaymentService {
         return generatedSignature.equals(signature);
     }
 
+
+    private String generateRandomNumber() {
+        Random random = new Random();
+        int randomNumber = random.nextInt(90000) + 10000; // Generates a random number between 10000 and 99999
+        return String.valueOf(randomNumber);
+    }
+
+    private String generateTicketId() {
+
+        return BOOKING_ID_PREFIX + generateRandomNumber();
+    }
+
+    private void setTicketIdAndPaymentStatus(String orderId, String paymentId, String ticketId) {
+        // Determine the type of payment and set ticketId and paymentStatus in the respective repository
+        Optional<InstitutionDetails> institutionDetailsOpt = institutionDetailsRepo.findByOrderId(orderId);
+        Optional<PublicDetails> publicDetailsOpt = publicDetailsRepo.findByOrderId(orderId);
+        Optional<ForeignerDetails> foreignerDetailsOpt = foreignerDetailsRepo.findByOrderId(orderId);
+
+        if (institutionDetailsOpt.isPresent()) {
+            InstitutionDetails institutionDetails = institutionDetailsOpt.get();
+            institutionDetails.setTicketId(ticketId);
+            institutionDetails.setPaymentid(paymentId);
+            institutionDetails.setPaymentStatus(true);
+            institutionDetailsRepo.save(institutionDetails);
+        } else if (publicDetailsOpt.isPresent()) {
+            PublicDetails publicDetails = publicDetailsOpt.get();
+            publicDetails.setTicketId(ticketId);
+            publicDetails.setPaymentid(paymentId);
+            publicDetails.setPaymentStatus(true);
+            publicDetailsRepo.save(publicDetails);
+        } else if (foreignerDetailsOpt.isPresent()) {
+            ForeignerDetails foreignerDetails = foreignerDetailsOpt.get();
+            foreignerDetails.setTicketId(ticketId);
+            foreignerDetails.setPaymentid(paymentId);
+            foreignerDetails.setPaymentStatus(true);
+            foreignerDetailsRepo.save(foreignerDetails);
+        }
+    }
 }
+

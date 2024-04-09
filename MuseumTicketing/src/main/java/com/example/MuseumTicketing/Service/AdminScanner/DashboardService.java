@@ -48,12 +48,23 @@ public class DashboardService {
 
         // Combine all details into a single list
         List<DetailsRequest> allDetails = new ArrayList<>();
-        allDetails.addAll(publicDetails);
-        allDetails.addAll(institutionDetails);
-        allDetails.addAll(foreignerDetails);
+        allDetails.addAll(filterWithTicketId(publicDetails));
+        allDetails.addAll(filterWithTicketId(institutionDetails));
+        allDetails.addAll(filterWithTicketId(foreignerDetails));
 
         return allDetails;
     }
+
+    private List<DetailsRequest> filterWithTicketId(List<DetailsRequest> detailsList) {
+        List<DetailsRequest> filteredDetails = new ArrayList<>();
+        for (DetailsRequest detail : detailsList) {
+            if (detail.getTicketId() != null && !detail.getTicketId().isEmpty()) {
+                filteredDetails.add(detail);
+            }
+        }
+        return filteredDetails;
+    }
+
 
     private List<DetailsRequest> getPublicDetailsForDate(LocalDate currentDate) {
         // Retrieve public details for the current date
@@ -110,6 +121,8 @@ public class DashboardService {
         detailsRequest.setBookDate(foreignerDetails.getBookDate());
         detailsRequest.setPaymentid(foreignerDetails.getPaymentid());
         detailsRequest.setVisitStatus(foreignerDetails.isVisitStatus());
+        detailsRequest.setPaymentStatus(foreignerDetails.isPaymentStatus());
+        detailsRequest.setTicketId(foreignerDetails.getTicketId());
 
 
         return detailsRequest;
@@ -132,6 +145,8 @@ public class DashboardService {
         detailsRequest.setBookDate(institutionDetails.getBookDate());
         detailsRequest.setPaymentid(institutionDetails.getPaymentid());
         detailsRequest.setVisitStatus(institutionDetails.isVisitStatus());
+        detailsRequest.setPaymentStatus(institutionDetails.isPaymentStatus());
+        detailsRequest.setTicketId(institutionDetails.getTicketId());
 
         return detailsRequest;
     }
@@ -152,6 +167,8 @@ public class DashboardService {
         detailsRequest.setBookDate(publicDetails.getBookDate());
         detailsRequest.setPaymentid(publicDetails.getPaymentid());
         detailsRequest.setVisitStatus(publicDetails.isVisitStatus());
+        detailsRequest.setPaymentStatus(publicDetails.isPaymentStatus());
+        detailsRequest.setTicketId(publicDetails.getTicketId());
 
         return detailsRequest;
     }
