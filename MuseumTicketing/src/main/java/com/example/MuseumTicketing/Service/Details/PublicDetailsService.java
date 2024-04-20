@@ -1,4 +1,4 @@
-package com.example.MuseumTicketing.Service;
+package com.example.MuseumTicketing.Service.Details;
 
 import com.example.MuseumTicketing.DTO.DetailsRequest;
 import com.example.MuseumTicketing.Model.PublicDetails;
@@ -37,7 +37,7 @@ public class PublicDetailsService {
         publicDetails.setType(detailsRequest.getType());
         publicDetails.setTotalPrice(detailsRequest.getTotalPrice());
         publicDetails.setVisitDate(detailsRequest.getVisitDate());
-       // publicDetails.setPaymentid(detailsRequest.getPaymentid());
+       // publicDetails.setMobileNumber(detailsRequest.getMobileNumber());
 
 
         publicDetailsRepo.save(publicDetails);

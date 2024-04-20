@@ -1,4 +1,4 @@
-package com.example.MuseumTicketing.Service;
+package com.example.MuseumTicketing.Service.BasePrice;
 
 import com.example.MuseumTicketing.DTO.PriceRequest;
 import com.example.MuseumTicketing.Model.Price;

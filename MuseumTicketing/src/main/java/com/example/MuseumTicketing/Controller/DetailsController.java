@@ -2,12 +2,14 @@ package com.example.MuseumTicketing.Controller;
 
 import com.example.MuseumTicketing.DTO.DetailsRequest;
 import com.example.MuseumTicketing.DTO.PriceRequest;
+import com.example.MuseumTicketing.Model.ForeignerDetails;
 import com.example.MuseumTicketing.Model.InstitutionDetails;
 import com.example.MuseumTicketing.Model.PublicDetails;
+import com.example.MuseumTicketing.Service.Details.ForeignerDetailsService;
 import com.example.MuseumTicketing.Service.DetailsService;
-import com.example.MuseumTicketing.Service.InstitutionDetailsService;
-import com.example.MuseumTicketing.Service.PriceRequestService;
-import com.example.MuseumTicketing.Service.PublicDetailsService;
+import com.example.MuseumTicketing.Service.Details.InstitutionDetailsService;
+import com.example.MuseumTicketing.Service.BasePrice.PriceRequestService;
+import com.example.MuseumTicketing.Service.Details.PublicDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +31,16 @@ public class DetailsController {
     private final InstitutionDetailsService institutionDetailsService;
     private final PublicDetailsService publicDetailsService;
 
+    private final ForeignerDetailsService foreignerDetailsService;
+
 
     @Autowired
-    public DetailsController(DetailsService detailsService, PriceRequestService priceRequestService, InstitutionDetailsService institutionDetailsService, PublicDetailsService publicDetailsService) {
+    public DetailsController(DetailsService detailsService, PriceRequestService priceRequestService, InstitutionDetailsService institutionDetailsService, PublicDetailsService publicDetailsService, ForeignerDetailsService foreignerDetailsService) {
         this.detailsService = detailsService;
         this.priceRequestService = priceRequestService;
         this.institutionDetailsService = institutionDetailsService;
         this.publicDetailsService = publicDetailsService;
+        this.foreignerDetailsService = foreignerDetailsService;
     }
 
     @CrossOrigin(origins = "http://localhost:8081")
@@ -58,10 +63,11 @@ public class DetailsController {
             Object submittedDetails;
             if ("institution".equalsIgnoreCase(type)) {
                 submittedDetails= institutionDetailsService.submitAdditionalDetails(sessionId, mobileNumber, detailsRequest);
-            } else {
+            } else if("public".equalsIgnoreCase(type)) {
                 submittedDetails = publicDetailsService.submitAdditionalDetails(sessionId, mobileNumber, detailsRequest);
+            }else {
+                submittedDetails = foreignerDetailsService.submitAdditionalDetails(sessionId, mobileNumber, detailsRequest);
             }
-
 
 
             Map<String,Object> response = new HashMap<>();
@@ -80,7 +86,7 @@ public class DetailsController {
 
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("status", "error");
-            errorResponse.put("message", "Failed to submit details. " + e.getMessage());
+            errorResponse.put("message", "Failed to submit details. " );
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
@@ -114,30 +120,30 @@ public class DetailsController {
             return ((InstitutionDetails) details).getTotalPrice();
         } else if (details instanceof PublicDetails) {
             return ((PublicDetails) details).getTotalPrice();
-        } else {
-            return null;
+        } else if (details instanceof ForeignerDetails){
+            return ((ForeignerDetails) details).getTotalPrice();
         }
-
+        else return null;
     }
     private String getNameFromDetails(Object details) {
         if (details instanceof InstitutionDetails) {
             return ((InstitutionDetails) details).getInstitutionName();
         } else if (details instanceof PublicDetails) {
             return ((PublicDetails) details).getName();
-        } else {
-            return null;
+        } else if (details instanceof ForeignerDetails){
+            return ((ForeignerDetails) details).getName();
         }
-
+        else return null;
     }
     private String getMobileNumberFromDetails(Object details) {
         if (details instanceof InstitutionDetails) {
             return ((InstitutionDetails) details).getMobileNumber();
         } else if (details instanceof PublicDetails) {
             return ((PublicDetails) details).getMobileNumber();
-        } else {
-            return null;
+        } else if (details instanceof ForeignerDetails){
+            return ((ForeignerDetails) details).getMobileNumber();
         }
-
+        else return null;
     }
 
     private String getSessionIdFromDetails(Object details) {
@@ -145,10 +151,10 @@ public class DetailsController {
             return ((InstitutionDetails) details).getSessionId();
         } else if (details instanceof PublicDetails) {
             return ((PublicDetails) details).getSessionId();
-        } else {
-            return null;
+        } else if (details instanceof ForeignerDetails){
+            return ((ForeignerDetails) details).getSessionId();
         }
-
+        else return null;
     }
 }
 
